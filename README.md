@@ -17,6 +17,14 @@ From the primary regions that were offered by this command, `europe-west4` was c
 
 Refer to the [Firebase 'apphosting' Docs](https://firebase.google.com/docs/cli#apphosting-commands) for other commands.
 
+## Generating Kantata API Types
+
+The Kantata API's quite large, and more to the point, we don't need the majority of it.
+
+Unfortunately, `openapi-typescript` doesn't support filtering of operations, so this project uses `@redocly/cli` to generate a filtered yml file, from which the types are generated.
+
+Should this need to be regenated, you just need to `npm run types:generate:kantata`. Note that the `openapi-typescript` package needs to be at version 5 to work with Kantata's OpenAPI Specification v2.
+
 ## Getting Started
 
 First, run the development server:
