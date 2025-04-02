@@ -10,7 +10,7 @@
     "lint-staged": "lint-staged",
     "format": "prettier --check .",
     "format:fix": "prettier --write --list-different .",
-    "prepare": "husky"
+    "prepare": "husky install"
   },
   "dependencies": {
     "next": "15.2.4",
