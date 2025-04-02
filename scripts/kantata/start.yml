@@ -1,0 +1,13 @@
+apis:
+  main:
+    root: https://app.mavenlink.com/oas/specification
+    decorators:
+      filter-in:
+        property: operationId
+        # add more values to this list to include them:
+        value: [get-users]
+    rules:
+      operation-operationId-unique: error
+      operation-parameters-unique: error
+      path-not-include-query: error
+      spec: error
