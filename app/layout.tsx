@@ -25,7 +25,11 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/favicon.svg" />
       </head>
-      <body className={`${dmSans.variable} antialiased`}>{children}</body>
+      <body
+        className={`${dmSans.variable} antialiased bg-[#1e2b37] text-gray-100`}
+      >
+        {children}
+      </body>
     </html>
   );
 }
