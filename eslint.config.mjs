@@ -11,7 +11,7 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   {
-    ignores: ["**/*.gen.ts"],
+    ignores: ["lib/api/kantata/kantata.types.ts"],
   },
   ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
 ];

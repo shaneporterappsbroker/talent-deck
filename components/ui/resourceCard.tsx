@@ -1,4 +1,4 @@
-import { Resource } from "@/lib/types";
+import { Resource } from "@/lib/api/models/types";
 import { getInitials } from "@/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import React from "react";
