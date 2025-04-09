@@ -1,8 +1,8 @@
-import { getData } from "@/lib/translators/kantata/translator";
+import { translateUserData } from "@/lib/api/kantata/kantata.mappers";
 import { ResourceCard } from "../ui/resourceCard";
 
 export const List = async () => {
-  const resources = await getData();
+  const resources = await translateUserData();
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mx-8">
