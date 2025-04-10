@@ -10,10 +10,10 @@ const compat = new FlatCompat({
 });
 
 const eslintConfig = [
-  {
-    ignores: ["lib/api/kantata/kantata.types.ts"],
-  },
-  ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
+  ...compat.config({
+    ignorePatterns: ["lib/api/kantata/kantata.types.ts"],
+    extends: ["next/core-web-vitals", "next/typescript", "prettier"],
+  }),
 ];
 
 export default eslintConfig;

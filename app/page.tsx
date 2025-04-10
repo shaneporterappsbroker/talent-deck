@@ -1,12 +1,11 @@
 import { SparklesCore } from "@/components/ui/sparkles";
 import Image from "next/image";
 import { metadata } from "./layout";
-import { CtaLinkButton } from "@/components/ui/ctaLinkButton";
-import AuthButton from "@/components/authButton";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
 import { routes } from "@/lib/routes";
+import { SignInButton } from "@/components/signInButton";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
@@ -14,8 +13,6 @@ export default async function Home() {
   if (session?.user && session?.kantataAccessToken) {
     redirect(routes.hub);
   }
-
-  console.log("Session: ", session);
 
   return (
     <div className="h-screen relative w-full bg-black flex flex-col items-center justify-center overflow-hidden rounded-md">
@@ -43,9 +40,8 @@ export default async function Home() {
       <h2 className="lg:text-3xl md:text-5xl text-xl text-white mt-2">
         {metadata.description}
       </h2>
-      <CtaLinkButton href="/select-talent" className="mt-12" />
 
-      <AuthButton />
+      <SignInButton />
     </div>
   );
 }
