@@ -1,0 +1,32 @@
+# Settings for Cloud Run
+runConfig:
+  minInstances: 2
+  maxInstances: 100
+  concurrency: 100
+  cpu: 2
+  memoryMiB: 1024
+
+# Environment variables and secrets
+env:
+  - variable: NEXT_PUBLIC_KANTATA_CALLBACK_URL
+    secret: projects/421795921996/secrets/NEXT_PUBLIC_KANTATA_CALLBACK_URL
+  - variable: NEXT_PUBLIC_KANTATA_CLIENT_ID
+    secret: projects/421795921996/secrets/NEXT_PUBLIC_KANTATA_CLIENT_ID
+  - variable: KANTATA_TOKEN_URL
+    secret: projects/421795921996/secrets/KANTATA_TOKEN_URL
+  - variable: KANTATA_CALLBACK_URL
+    secret: projects/421795921996/secrets/KANTATA_CALLBACK_URL
+  - variable: KANTATA_CLIENT_ID
+    secret: projects/421795921996/secrets/KANTATA_CLIENT_ID
+  - variable: KANTATA_CLIENT_SECRET
+    secret: projects/421795921996/secrets/KANTATA_CLIENT_SECRET
+  - variable: GOOGLE_CLIENT_ID
+    secret: projects/421795921996/secrets/GOOGLE_CLIENT_ID
+  - variable: GOOGLE_CLIENT_SECRET
+    secret: projects/421795921996/secrets/GOOGLE_CLIENT_SECRET
+  - variable: NEXTAUTH_SECRET
+    secret: projects/421795921996/secrets/NEXTAUTH_SECRET
+  - variable: KANTATA_API_BASE_URL
+    secret: projects/421795921996/secrets/KANTATA_API_BASE_URL
+  - variable: NEXTAUTH_URL
+    secret: projects/421795921996/secrets/NEXTAUTH_URL
