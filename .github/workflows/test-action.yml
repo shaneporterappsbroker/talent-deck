@@ -1,0 +1,23 @@
+name: Test Action Download
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: "Branch to run on"
+        required: true
+        default: "chore/shane-test" # Change this to your actual feature branch name
+
+jobs:
+  test_download:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.branch }}
+
+      - name: Test Hello World Action
+        uses: actions/hello-world-javascript-action@v1
+        with:
+          who-to-greet: "World"
