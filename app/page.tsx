@@ -3,9 +3,9 @@ import Image from "next/image";
 import { metadata } from "./layout";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
 import { routes } from "@/lib/routes";
 import { SignInButton } from "@/components/signInButton";
+import { authOptions } from "@/lib/auth/options";
 
 export default async function Home() {
   const session = await getServerSession(authOptions);
