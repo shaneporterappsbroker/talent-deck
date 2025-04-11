@@ -1,8 +1,8 @@
 export const runtime = "nodejs"; // 🛠️ Force Node.js runtime to avoid async `params` issue
 
+import { authOptions } from "@/lib/auth/options";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
-import { authOptions } from "../../../auth/[...nextauth]/route";
 
 export async function GET(
   req: NextRequest,
