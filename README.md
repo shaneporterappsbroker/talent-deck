@@ -2,7 +2,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Firebase App Hosting
 
-- For now, this project is hosted at github.com/shaneporterappsbroker/talent-deck
+- For now, this project is hosted at github.com/shaneporterqodea/talent-deck
 - Firebase App hosting is used for deployment/hosting, and new versions are pushed following a commit to the `main` branch.
 - This was initially set up from https://firebase.google.com/docs/app-hosting/get-started, Step 1 onwards. Initial authentication was set up using shane.porter@qodea.com. Note that the **--location us-central1** flag was not recognised, so the command was run with:
 
@@ -24,6 +24,23 @@ The Kantata API's quite large, and more to the point, we don't need the majority
 Unfortunately, `openapi-typescript` doesn't support filtering of operations, so this project uses `@redocly/cli` to generate a filtered yml file, from which the types are generated.
 
 Should this need to be regenated, you just need to `npm run types:generate:kantata`. Note that the `openapi-typescript` package needs to be at version 5 to work with Kantata's OpenAPI Specification v2.
+
+## Secrets
+
+There are always secrets. Take a look at 'em in `apphosting.yraml', the _special_ configuration for Firebase App Hosting.
+
+At the time of writing, the [Firebase App Hosting Docs](https://firebase.google.com/docs/app-hosting/get-started) were a bit crap.
+
+I achieved secrets this way:
+
+- Defined the necessary secrets in Secret Manager.
+- Then, I had to grant access for **each** one, like this:
+
+```bash
+firebase apphosting:secrets:grantaccess -b talent-deck KANTATA_CLIENT_ID
+```
+
+It then deployed.
 
 ## Getting Started
 
