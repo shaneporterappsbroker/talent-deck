@@ -37,7 +37,7 @@ I achieved secrets this way:
 - Then, I had to grant access for **each** one, like this:
 
 ```bash
-firebase apphosting:secrets:grantaccess -b talent-deck KANTATA_CLIENT_ID
+firebase apphosting:secrets:grantaccess -b talent-deck NEXT_PUBLIC_KANTATA_CLIENT_ID
 ```
 
 It then deployed.
