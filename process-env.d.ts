@@ -4,8 +4,6 @@ namespace NodeJS {
     NEXT_PUBLIC_KANTATA_CLIENT_ID: string;
 
     KANTATA_TOKEN_URL: string;
-    KANTATA_CALLBACK_URL: string;
-    KANTATA_CLIENT_ID: string;
     KANTATA_CLIENT_SECRET: string;
 
     GOOGLE_CLIENT_ID: string;

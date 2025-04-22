@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
     body: new URLSearchParams({
       grant_type: "authorization_code",
       code,
-      client_id: process.env.KANTATA_CLIENT_ID,
+      client_id: process.env.NEXT_PUBLIC_KANTATA_CLIENT_ID,
       client_secret: process.env.KANTATA_CLIENT_SECRET,
       redirect_uri: process.env.NEXT_PUBLIC_KANTATA_CALLBACK_URL,
     }),

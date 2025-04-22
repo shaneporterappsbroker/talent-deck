@@ -14,10 +14,6 @@ env:
     secret: projects/421795921996/secrets/NEXT_PUBLIC_KANTATA_CLIENT_ID
   - variable: KANTATA_TOKEN_URL
     secret: projects/421795921996/secrets/KANTATA_TOKEN_URL
-  - variable: KANTATA_CALLBACK_URL
-    secret: projects/421795921996/secrets/KANTATA_CALLBACK_URL
-  - variable: KANTATA_CLIENT_ID
-    secret: projects/421795921996/secrets/KANTATA_CLIENT_ID
   - variable: KANTATA_CLIENT_SECRET
     secret: projects/421795921996/secrets/KANTATA_CLIENT_SECRET
   - variable: GOOGLE_CLIENT_ID
