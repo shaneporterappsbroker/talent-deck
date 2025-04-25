@@ -39,9 +39,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(ret);
   } catch (error) {
     console.error("❌ Error in POST /api/presentations:", error);
-    return NextResponse.json(
-      { error: error.message ?? "Invalid request" },
-      { status: 400 },
-    );
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: errorMessage }, { status: 400 });
   }
 }
