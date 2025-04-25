@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, JSX } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,11 +22,14 @@ import { Resource } from "@/lib/api/models/types";
 import { getUsersData } from "@/lib/api/services/resource.service";
 import { UserMenu } from "@/components/userMenu";
 import { AutoResizingTextArea } from "@/components/AutoResizingTextArea";
+import { SlidesPreview } from "@/components/slidesPreview";
 
 interface Message {
   id: number;
   role: "user" | "bot";
-  text: string;
+  text?: string;
+  type?: "text" | "component";
+  component?: JSX.Element;
 }
 
 export default function Page() {
@@ -99,18 +102,16 @@ export default function Page() {
             role: "bot",
             text: "Awesome. Generating CV-friendly summaries...",
           },
-        ]);
-        setStep(3);
-      } else if (step === 3) {
-        setMessages((prev) => [
-          ...prev,
           {
-            id: prev.length,
+            id: prev.length + 1,
             role: "bot",
-            text: "Slides are ready! You can now review and export them.",
+            type: "component",
+            component: (
+              <SlidesPreview emails={selectedEngineers.map((e) => e.email)} />
+            ),
           },
         ]);
-        setStep(4);
+        setStep(3);
       }
     }, 800);
   };
@@ -122,6 +123,7 @@ export default function Page() {
 
     const users = await getUsersData({
       searchQuery,
+      by: "name",
     });
 
     setEngineers(users);
@@ -131,7 +133,6 @@ export default function Page() {
   return (
     <div className="flex flex-col h-screen bg-[#343541] text-white relative">
       <UserMenu />
-
       <div className="flex-1 overflow-y-auto px-4 py-6 space-y-4 max-w-3xl mx-auto w-full">
         <AnimatePresence>
           {messages.map((msg) => (
@@ -145,15 +146,21 @@ export default function Page() {
               }`}
             >
               {msg.role === "bot" ? (
-                <div className="max-w-xl text-lg text-gray-200 whitespace-pre-line">
-                  <Typewriter
-                    words={[msg.text]}
-                    loop={1}
-                    typeSpeed={30}
-                    deleteSpeed={0}
-                    delaySpeed={1000}
-                  />
-                </div>
+                msg.type === "component" ? (
+                  // Render the component if the message type is "component"
+                  <div className="max-w-xl">{msg.component}</div>
+                ) : (
+                  // Render text if it's not a component
+                  <div className="max-w-xl text-lg text-gray-200 whitespace-pre-line">
+                    <Typewriter
+                      words={[msg.text || ""]}
+                      loop={1}
+                      typeSpeed={30}
+                      deleteSpeed={0}
+                      delaySpeed={1000}
+                    />
+                  </div>
+                )
               ) : (
                 <div className="px-4 py-3 rounded-xl bg-[#2e8fff] text-white max-w-xl text-lg whitespace-pre-line">
                   {msg.text}
@@ -318,7 +325,7 @@ export default function Page() {
           </div>
         </div>
       ) : (
-        step !== 4 && (
+        step !== 3 && (
           <div className="sticky bottom-0 w-full bg-[#343541] border-t border-[#40414f] px-4 py-4">
             <form
               onSubmit={(e) => {
@@ -327,15 +334,6 @@ export default function Page() {
               }}
               className="flex max-w-3xl mx-auto items-center gap-2"
             >
-              {/* <Input
-                className="flex-grow rounded-md border border-[#40414f] bg-[#40414f] px-4 py-3 text-base placeholder-gray-400 text-white focus:outline-none"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder={
-                  step === 2 ? "Describe your project..." : "Send a message..."
-                }
-              /> */}
-
               <AutoResizingTextArea
                 placeholder={
                   step === 2 ? "Describe your project..." : "Send a message..."
@@ -353,6 +351,28 @@ export default function Page() {
             </form>
           </div>
         )
+      )}
+
+      {step === 3 && (
+        <div className="sticky bottom-0 w-full bg-[#343541] border-t border-[#40414f] px-4 py-6 flex justify-center">
+          <Button
+            variant="secondary"
+            onClick={() => {
+              setMessages([
+                {
+                  id: 0,
+                  role: "bot",
+                  text: "Hi! Let's start building your team. Please select the engineers you'd like to add.",
+                },
+              ]);
+              setStep(1);
+              setSelectedEngineers([]);
+              setInput("");
+            }}
+          >
+            Start Again
+          </Button>
+        </div>
       )}
     </div>
   );

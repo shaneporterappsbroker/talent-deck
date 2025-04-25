@@ -17,7 +17,9 @@ export async function GET(
 
   const kantataRes = await fetch(url, {
     headers: {
-      Authorization: `Bearer ${session?.kantataAccessToken}`,
+      ...(session?.kantataAccessToken && {
+        Authorization: `Bearer ${session.kantataAccessToken}`,
+      }),
       "Content-Type": "application/json",
     },
   });
