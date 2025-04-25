@@ -14,6 +14,8 @@
     "types:generate:kantata": "sh ./scripts/kantata/generate-types.sh"
   },
   "dependencies": {
+    "@googleapis/drive": "^12.0.0",
+    "@googleapis/slides": "^1.2.4",
     "@hookform/resolvers": "^5.0.1",
     "@radix-ui/react-avatar": "^1.1.3",
     "@radix-ui/react-label": "^2.1.2",

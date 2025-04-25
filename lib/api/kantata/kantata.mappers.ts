@@ -71,6 +71,7 @@ export const translateUserData = (data: GetUsersResponseData): Resource[] => {
     return {
       id,
       name: user.full_name ?? "",
+      email: user.email_address ?? "",
       img: user.photo_path ?? "",
       title: user.headline ?? "",
       languages: skillsData

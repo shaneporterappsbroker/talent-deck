@@ -16,12 +16,15 @@ export default function AuthRedirectPage() {
 
         const state = encodeURIComponent(session.user?.email || "init");
         const url = `https://appsbroker.mavenlink.com/oauth/authorize?response_type=code&client_id=${process.env.NEXT_PUBLIC_KANTATA_CLIENT_ID}&redirect_uri=${redirectUri}&state=${state}`;
-        window.location.href = url;
+
+        setTimeout(() => {
+          window.location.href = url;
+        }, 2000);
       };
 
       redirectToKantata();
     }
   }, [session?.user?.email, status]);
 
-  return <Loader />;
+  return <Loader text="Just a moment..." />;
 }
