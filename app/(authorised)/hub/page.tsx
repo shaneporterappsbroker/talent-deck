@@ -49,7 +49,8 @@ export default function Page() {
 
   const [selectedEngineers, setSelectedEngineers] = useState<Resource[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -95,6 +96,7 @@ export default function Page() {
         ]);
         setStep(2);
       } else if (step === 2) {
+        setIsGenerating(true);
         setMessages((prev) => [
           ...prev,
           {
@@ -107,7 +109,10 @@ export default function Page() {
             role: "bot",
             type: "component",
             component: (
-              <SlidesPreview emails={selectedEngineers.map((e) => e.email)} />
+              <SlidesPreview
+                emails={selectedEngineers.map((e) => e.email)}
+                onComplete={() => setIsGenerating(false)}
+              />
             ),
           },
         ]);
@@ -119,7 +124,7 @@ export default function Page() {
   const fetchEngineers = async (searchQuery: string) => {
     if (searchQuery.length < 4) return;
 
-    setLoading(true);
+    setIsLoading(true);
 
     const users = await getUsersData({
       searchQuery,
@@ -127,7 +132,7 @@ export default function Page() {
     });
 
     setEngineers(users);
-    setLoading(false);
+    setIsLoading(false);
   };
 
   return (
@@ -193,7 +198,7 @@ export default function Page() {
                   />
 
                   <div className="space-y-2">
-                    {loading ? (
+                    {isLoading ? (
                       <div className="flex justify-center py-4">
                         <Loader2 className="animate-spin text-gray-500" />
                       </div>
@@ -353,7 +358,7 @@ export default function Page() {
         )
       )}
 
-      {step === 3 && (
+      {step === 3 && !isGenerating && (
         <div className="sticky bottom-0 w-full bg-[#343541] border-t border-[#40414f] px-4 py-6 flex justify-center">
           <Button
             variant="secondary"
