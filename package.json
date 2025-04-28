@@ -11,6 +11,7 @@
     "format": "prettier --check .",
     "format:fix": "prettier --write --list-different .",
     "prepare": "husky install",
+    "ts:check": "tsc --noEmit",
     "types:generate:kantata": "sh ./scripts/kantata/generate-types.sh"
   },
   "dependencies": {

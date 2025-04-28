@@ -1,1 +1,2 @@
+npm run ts:check
 npm run lint-staged --concurrent false
