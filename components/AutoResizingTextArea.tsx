@@ -30,7 +30,7 @@ export const AutoResizingTextArea = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       onSubmit(value);
     }
@@ -48,7 +48,7 @@ export const AutoResizingTextArea = ({
         onInput={handleInputChange}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown} // Add onKeyDown for Enter key behavior
-        className="resize-none overflow-hidden flex-grow rounded-md border border-[#40414f] bg-[#40414f] px-4 py-3 text-base placeholder-gray-400 text-white focus:outline-none"
+        className="resize-none overflow-hidden flex-grow rounded-md border border-[#40414f] bg-[#40414f] px-4 py-3 placeholder-gray-400 focus:outline-none"
         placeholder={placeholder}
         style={{ minHeight: "28px" }}
       />
