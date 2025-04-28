@@ -3,6 +3,8 @@ import { Project, Resource } from "@/lib/api/models/types";
 
 import { GetUsersResponseData } from "./kantata.client";
 
+const LOW_LEVEL_SKILL = 1;
+
 // for now, let's just return some data from here:
 export const translateUserData = (data: GetUsersResponseData): Resource[] => {
   if (data === undefined) {
@@ -86,12 +88,10 @@ export const translateUserData = (data: GetUsersResponseData): Resource[] => {
         .filter(
           (skill) =>
             skill.description !== "Language" &&
-            !(skill.description?.includes("Certification") ?? false),
+            !(skill.description?.includes("Certification") ?? false) &&
+            (skill.level ?? 0) > LOW_LEVEL_SKILL,
         )
-        .map(({ name, level }) => ({
-          name: name ?? "",
-          level: level ?? 0,
-        })),
+        .map((skill) => skill.name ?? ""),
       projects: getProjects(user),
     };
   });
