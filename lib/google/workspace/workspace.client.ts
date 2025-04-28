@@ -191,7 +191,7 @@ export async function generateSlides(
             insertText: {
               objectId: skillsShape,
               insertionIndex: 0,
-              text: resource.skills.map((s) => s.name).join("\n"),
+              text: resource.skills.join("\n"),
             },
           },
           {

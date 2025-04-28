@@ -14,7 +14,7 @@ export type Resource = {
   email: string;
   img: string;
   title: string;
-  skills: Skill[];
+  skills: string[];
   languages: string[];
   certifications: string[];
   projects: Project[];
