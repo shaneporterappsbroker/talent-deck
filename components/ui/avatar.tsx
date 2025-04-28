@@ -34,6 +34,8 @@ function AvatarImage({
   );
 }
 
+const MemoizedAvatarImage = React.memo(AvatarImage);
+
 function AvatarFallback({
   className,
   ...props
@@ -50,4 +52,4 @@ function AvatarFallback({
   );
 }
 
-export { Avatar, AvatarImage, AvatarFallback };
+export { Avatar, MemoizedAvatarImage as AvatarImage, AvatarFallback };
