@@ -111,6 +111,7 @@ export default function Page() {
             component: (
               <SlidesPreview
                 emails={selectedEngineers.map((e) => e.email)}
+                projectDescription="A financial services company requires expertise in JavaScript, NodeJS and GraphQL. The work will require a modernisation of their existing platform, so Google Cloud experience will be particularly beneficial."
                 onComplete={() => setIsGenerating(false)}
               />
             ),

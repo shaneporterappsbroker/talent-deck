@@ -16,3 +16,10 @@ export function getInitials(name: string): string {
     .map((word) => word[0]?.toUpperCase() ?? "")
     .join("");
 }
+
+export function getErrorStack(err: Error | unknown): string | undefined {
+  if (process.env.NODE_ENV === "development" && err instanceof Error) {
+    return err.stack;
+  }
+  return undefined;
+}
