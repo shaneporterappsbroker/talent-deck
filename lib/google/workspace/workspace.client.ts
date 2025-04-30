@@ -194,16 +194,25 @@ export async function generateSlides(
               text: resource.skills.join("\n"),
             },
           },
-          {
-            createParagraphBullets: {
-              objectId: skillsShape,
-              textRange: { type: "ALL" },
-              bulletPreset: "BULLET_DISC_CIRCLE_SQUARE",
-            },
-          },
+          // if there are no certifications, this request will
+          // errors as there's no text to replace:
+          ...(resource.skills.length > 0
+            ? [
+                {
+                  createParagraphBullets: {
+                    objectId: skillsShape,
+                    textRange: { type: "ALL" },
+                    bulletPreset: "BULLET_DISC_CIRCLE_SQUARE",
+                  },
+                },
+              ]
+            : []),
         );
       }
 
+      // POSSIBLE TODO: we may want to just hide the certifications shape
+      // if there are no certifications
+      // in which case, we may want to show more skills to compensate
       if (certsShape) {
         requests.push(
           {
@@ -227,13 +236,19 @@ export async function generateSlides(
               text: resource.certifications.join("\n"),
             },
           },
-          {
-            createParagraphBullets: {
-              objectId: certsShape,
-              textRange: { type: "ALL" },
-              bulletPreset: "BULLET_DISC_CIRCLE_SQUARE",
-            },
-          },
+          // unlikely there'll be no certifications, but just in case
+          // there are none, this createParagraphBullets request will be ignored:
+          ...(resource.certifications.length > 0
+            ? [
+                {
+                  createParagraphBullets: {
+                    objectId: certsShape,
+                    textRange: { type: "ALL" },
+                    bulletPreset: "BULLET_DISC_CIRCLE_SQUARE",
+                  },
+                },
+              ]
+            : []),
         );
       }
 

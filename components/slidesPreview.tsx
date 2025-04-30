@@ -1,37 +1,52 @@
-import { GenerateSlidesResult } from "@/lib/google/workspace/workspace.client";
-import { useEffect, useState } from "react";
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import {
+  processDataAndGenerateSlides,
+  ProcessDataResult,
+} from "@/app/actions/generateSlides";
 import { Star } from "lucide-react";
+import { SlidesError } from "./slidesError";
 
 export function SlidesPreview({
   emails,
+  projectDescription,
   onComplete,
 }: {
   emails: string[];
+  projectDescription: string;
   onComplete: () => void;
 }) {
   const [loading, setLoading] = useState(true);
-  const [response, setResponse] = useState<GenerateSlidesResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [slidesResult, setSlidesResult] = useState<ProcessDataResult | null>(
+    null,
+  );
+  const hasFetched = useRef(false); // Prevent double-fetch in dev
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
     const fetchSlides = async () => {
       try {
-        const res = await fetch("/api/presentations", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ emails }),
+        const result = await processDataAndGenerateSlides({
+          emails,
+          projectDescription,
         });
 
-        if (!res.ok) {
-          const { error } = await res.json();
-          throw new Error(error ?? "Failed to generate slides");
-        }
+        setSlidesResult(result);
 
-        const data: GenerateSlidesResult = await res.json();
-        setResponse(data);
+        setLoading(false);
+        onComplete();
       } catch (err) {
-        console.error("Failed to fetch slides:", err);
-        setError(err instanceof Error ? err.message : "Something went wrong");
+        console.error("Failed to generate slides:", err);
+        setSlidesResult({
+          data: null,
+          error: {
+            message: "Failed to generate slides.",
+            stack: err instanceof Error ? err.stack : undefined,
+          },
+        });
       } finally {
         setLoading(false);
         onComplete();
@@ -39,25 +54,18 @@ export function SlidesPreview({
     };
 
     fetchSlides();
-  }, [emails, onComplete]);
+  }, [emails, projectDescription, onComplete]);
 
   if (loading) {
     return <Star className="animate-spin text-gray-500" size={30} />;
   }
 
-  if (error) {
-    return (
-      <div className="mx-auto max-w-md mt-4 p-4 bg-red-50 border border-red-200 text-red-800 rounded-xl shadow-sm">
-        <p className="font-medium">
-          Something went wrong while generating your slides.
-        </p>
-        <p className="text-sm mt-1">{error}</p>
-      </div>
-    );
+  if (!slidesResult) {
+    return null;
   }
 
-  if (!response) {
-    return null; // or some fallback message
+  if (slidesResult?.error) {
+    return <SlidesError error={slidesResult.error} />;
   }
 
   return (
@@ -65,7 +73,7 @@ export function SlidesPreview({
       <div className="flex justify-start">
         <div className="bg-gray-100 text-gray-900 p-4 rounded-2xl shadow-sm">
           <a
-            href={response.webViewLink}
+            href={slidesResult.data?.webViewLink}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline font-medium"
@@ -74,7 +82,7 @@ export function SlidesPreview({
           </a>
           <div className="mt-3">
             <iframe
-              src={response.iframeSrc}
+              src={slidesResult.data?.iframeSrc}
               width="400"
               height="300"
               allowFullScreen

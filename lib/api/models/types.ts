@@ -1,26 +1,32 @@
-export type Project = {
-  client: string;
-  description: string;
+import { z } from "zod";
+
+export type SlidesGenerationError = {
+  message: string;
+  stack?: string;
 };
 
-export type Skill = {
-  name: string;
-  level: number;
-};
+export const ProjectSchema = z.object({
+  client: z.string(),
+  description: z.string(),
+});
 
-export type Resource = {
-  id: string;
-  name: string;
-  email: string;
-  img: string;
-  title: string;
-  skills: string[];
-  languages: string[];
-  certifications: string[];
-  projects: Project[];
-};
+export const ResourceSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  email: z.string(),
+  img: z.string(),
+  title: z.string(),
+  skills: z.array(z.string()),
+  languages: z.array(z.string()),
+  certifications: z.array(z.string()),
+  projects: z.array(ProjectSchema),
+});
 
-export type GeneratedResource = Resource & {
-  strapline: string;
-  professionalBackground: string;
-};
+export const GeneratedResourceSchema = ResourceSchema.extend({
+  strapline: z.string().default(""),
+  professionalBackground: z.string().default(""),
+});
+
+export type Project = z.infer<typeof ProjectSchema>;
+export type Resource = z.infer<typeof ResourceSchema>;
+export type GeneratedResource = z.infer<typeof GeneratedResourceSchema>;
