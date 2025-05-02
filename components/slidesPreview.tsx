@@ -7,14 +7,13 @@ import {
 } from "@/app/actions/generateSlides";
 import { Star } from "lucide-react";
 import { SlidesError } from "./slidesError";
+import { CapturedInfo } from "@/lib/api/models/types";
 
 export function SlidesPreview({
-  emails,
-  projectDescription,
+  projectDetails,
   onComplete,
 }: {
-  emails: string[];
-  projectDescription: string;
+  projectDetails: CapturedInfo;
   onComplete: () => void;
 }) {
   const [loading, setLoading] = useState(true);
@@ -30,8 +29,7 @@ export function SlidesPreview({
     const fetchSlides = async () => {
       try {
         const result = await processDataAndGenerateSlides({
-          emails,
-          projectDescription,
+          projectDetails,
         });
 
         setSlidesResult(result);
@@ -54,7 +52,7 @@ export function SlidesPreview({
     };
 
     fetchSlides();
-  }, [emails, projectDescription, onComplete]);
+  }, [projectDetails, onComplete]);
 
   if (loading) {
     return <Star className="animate-spin text-gray-500" size={30} />;

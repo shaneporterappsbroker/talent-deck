@@ -1,6 +1,10 @@
 "use server";
 
-import { GeneratedResourceSchema, Resource } from "@/lib/api/models/types";
+import {
+  GeneratedEngineerResourceSchema,
+  EngineerResource,
+  CapturedInfo,
+} from "@/lib/api/models/types";
 import { getUsersData } from "@/lib/api/services/resource.service";
 import { authOptions } from "@/lib/auth/options";
 import { generateData } from "@/lib/google/ai/ai.client";
@@ -17,11 +21,9 @@ export type ProcessDataResult = {
 };
 
 export async function processDataAndGenerateSlides({
-  projectDescription,
-  emails,
+  projectDetails,
 }: {
-  projectDescription: string;
-  emails: string[];
+  projectDetails: CapturedInfo;
 }): Promise<ProcessDataResult> {
   const session = await getServerSession(authOptions);
   if (!session?.kantataAccessToken) {
@@ -34,10 +36,10 @@ export async function processDataAndGenerateSlides({
     };
   }
 
-  let developers: Resource[];
+  let engineerResources: EngineerResource[];
   try {
-    developers = await getUsersData({
-      searchQuery: emails,
+    engineerResources = await getUsersData({
+      searchQuery: projectDetails.engineers,
       token: session.kantataAccessToken,
       by: "email",
     });
@@ -53,7 +55,7 @@ export async function processDataAndGenerateSlides({
 
   let generatedDevs: string | undefined;
   try {
-    generatedDevs = await generateData(projectDescription, developers);
+    generatedDevs = await generateData({ projectDetails, engineerResources });
   } catch (err) {
     return {
       data: null,
@@ -72,7 +74,7 @@ export async function processDataAndGenerateSlides({
   }
 
   const slidesData = parsedData.flatMap((item) => {
-    const result = GeneratedResourceSchema.safeParse(item);
+    const result = GeneratedEngineerResourceSchema.safeParse(item);
     return result.success ? [result.data] : [];
   });
 

@@ -12,7 +12,7 @@ export const getUsersData = async ({
   by,
 }: {
   token?: string | undefined;
-  searchQuery: string | string[];
+  searchQuery: string;
   by: "name" | "email";
 }) => {
   if (searchQuery.length < MIN_LENGTHS[by]) {
@@ -26,7 +26,7 @@ export const getUsersData = async ({
         // conditional query based on name or email:
         ...(by === "name"
           ? { by_full_name: searchQuery as string }
-          : { by_email_addresses: (searchQuery as string[]).join(",") }),
+          : { by_email_addresses: searchQuery as string }),
         // only include the full details with the email search:
         ...(by === "email" && {
           include: "skills,skill_memberships,custom_field_values",
