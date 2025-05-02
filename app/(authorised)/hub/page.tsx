@@ -102,6 +102,7 @@ export default function Page() {
   return (
     <div className="flex flex-col h-screen bg-[#343541] text-white relative">
       <UserMenu />
+
       <ChatHistory messages={messages} />
 
       <div
