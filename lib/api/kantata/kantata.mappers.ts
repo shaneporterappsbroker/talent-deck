@@ -1,12 +1,14 @@
 import { definitions as Kantata } from "@/lib/api/kantata/kantata.types";
-import { Project, Resource } from "@/lib/api/models/types";
+import { Project, EngineerResource } from "@/lib/api/models/types";
 
 import { GetUsersResponseData } from "./kantata.client";
 
 const LOW_LEVEL_SKILL = 1;
 
 // for now, let's just return some data from here:
-export const translateUserData = (data: GetUsersResponseData): Resource[] => {
+export const translateUserData = (
+  data: GetUsersResponseData,
+): EngineerResource[] => {
   if (data === undefined) {
     return [];
   }

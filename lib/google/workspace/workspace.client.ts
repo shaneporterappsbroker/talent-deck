@@ -1,6 +1,6 @@
 import { auth, slides_v1 } from "@googleapis/slides";
 import { drive_v3 } from "@googleapis/drive";
-import { GeneratedResource } from "@/lib/api/models/types";
+import { GeneratedEngineerResource } from "@/lib/api/models/types";
 
 const SOURCE_PRESENTATION_ID = "1mf5cCvC2Y3jWJK76ubddhDbbtJVEcuy3hrk6Z1VzhVA";
 const TEMPLATE_SLIDE_ID = "SLIDES_API226386460_0";
@@ -30,7 +30,7 @@ async function withClients(
 
 export async function generateSlides(
   accessToken: string | undefined,
-  resources: GeneratedResource[],
+  resources: GeneratedEngineerResource[],
 ): Promise<GenerateSlidesResult> {
   return withClients(accessToken, async ({ slidesClient, driveClient }) => {
     const newPresentationId = await (async () => {
@@ -122,7 +122,7 @@ export async function generateSlides(
 
     const replacePlaceholders = async (
       slideId: string,
-      resource: GeneratedResource,
+      resource: GeneratedEngineerResource,
     ) => {
       const [imageId, skillsShape, certsShape] = await Promise.all([
         findImageByDescription(slideId, "AVATAR"),
