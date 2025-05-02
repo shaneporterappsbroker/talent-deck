@@ -17,6 +17,7 @@ import {
 } from "@/lib/config/promptSteps";
 import { useChatState } from "@/hooks/useChatState";
 import { StepNumber, useCapturedInfo } from "@/hooks/useCapturedInfo";
+import { validateUserResponse } from "@/app/actions/validateUserResponse";
 
 export default function Page() {
   const {
@@ -35,7 +36,7 @@ export default function Page() {
   const { capturedInfo, updateStepValue } = useCapturedInfo();
 
   // we can use the override for the engineers select step:
-  const handleSend = ({
+  const handleSend = async ({
     engineers,
     inputText,
   }: {
@@ -45,14 +46,7 @@ export default function Page() {
     // we need one of the two:
     if (engineers?.length === 0 && !inputText?.trim()) return;
 
-    updateStepValue(
-      step as StepNumber,
-      engineers?.length
-        ? engineers.map(({ email }) => email).join(",")
-        : (inputText ?? ""),
-    );
-
-    // append the user's message to the chat history:
+    // append the response/user's messages to the chat history:
     setMessages((prev) => [
       ...prev,
       {
@@ -63,35 +57,73 @@ export default function Page() {
       },
     ]);
 
+    // clear the input:
+    setInput("");
+
+    // for text input, we need to further validate the response:
+    let validationResponse = {
+      result: "pass",
+      text: "",
+    };
+
+    if (inputText) {
+      validationResponse = await validateUserResponse({
+        question: promptStepsConfig[step][BOT_PROMPT],
+        answer: inputText ?? "",
+      });
+    }
+
+    if (validationResponse.result === "pass") {
+      updateStepValue(
+        step as StepNumber,
+        engineers?.length
+          ? engineers.map(({ email }) => email).join(",")
+          : (inputText ?? ""),
+      );
+    }
+
     setTimeout(() => {
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "bot",
-          text: promptStepsConfig[step + 1][BOT_PROMPT],
-        } as const,
-        ...(step < PROMPTS_COUNT - 1
-          ? []
-          : [
-              {
-                role: "bot",
-                type: "component",
-                component: (
-                  <SlidesPreview
-                    projectDetails={capturedInfo}
-                    onComplete={() => setIsGenerating(false)}
-                  />
-                ),
-              } as const,
-            ]),
-      ]);
+      if (validationResponse.result === "pass") {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "bot",
+            text: `${validationResponse.text} ${promptStepsConfig[step + 1][BOT_PROMPT]}`,
+          } as const,
+          ...(step < PROMPTS_COUNT - 1
+            ? []
+            : [
+                {
+                  role: "bot",
+                  type: "component",
+                  component: (
+                    <SlidesPreview
+                      projectDetails={capturedInfo}
+                      onComplete={() => setIsGenerating(false)}
+                    />
+                  ),
+                } as const,
+              ]),
+        ]);
+      } else {
+        // if the validation fails, we need to show the validation message:
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "bot",
+            text: validationResponse.text,
+          } as const,
+        ]);
+      }
     }, 400);
 
-    if (step === PROMPTS_COUNT) {
-      setIsGenerating(true);
-    } else {
-      setInput("");
-      setStep((step) => step + 1);
+    // move on if the validation passes:
+    if (validationResponse.result === "pass") {
+      if (step === PROMPTS_COUNT) {
+        setIsGenerating(true);
+      } else {
+        setStep((step) => step + 1);
+      }
     }
   };
 
