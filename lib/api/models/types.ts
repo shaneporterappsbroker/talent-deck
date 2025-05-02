@@ -15,10 +15,20 @@ export type Message = {
   component?: JSX.Element;
 };
 
+export type QuestionAnswer = {
+  question: string;
+  answer: string;
+};
+
 export type SlidesGenerationError = {
   message: string;
   stack?: string;
 };
+
+export const ValidateUserResponseDataSchema = z.object({
+  result: z.enum(["pass", "fail"]),
+  text: z.string(),
+});
 
 export const ProjectSchema = z.object({
   client: z.string(),
@@ -42,6 +52,9 @@ export const GeneratedEngineerResourceSchema = EngineerResourceSchema.extend({
   professionalBackground: z.string().default(""),
 });
 
+export type ValidateUserResponseData = z.infer<
+  typeof ValidateUserResponseDataSchema
+>;
 export type Project = z.infer<typeof ProjectSchema>;
 export type EngineerResource = z.infer<typeof EngineerResourceSchema>;
 export type GeneratedEngineerResource = z.infer<

@@ -7,7 +7,7 @@ import {
 } from "@/lib/api/models/types";
 import { getUsersData } from "@/lib/api/services/resource.service";
 import { authOptions } from "@/lib/auth/options";
-import { generateData } from "@/lib/google/ai/ai.client";
+import { generateSlidesData } from "@/lib/google/ai/ai.client";
 import {
   generateSlides,
   GenerateSlidesResult,
@@ -55,7 +55,10 @@ export async function processDataAndGenerateSlides({
 
   let generatedDevs: string | undefined;
   try {
-    generatedDevs = await generateData({ projectDetails, engineerResources });
+    generatedDevs = await generateSlidesData({
+      projectDetails,
+      engineerResources,
+    });
   } catch (err) {
     return {
       data: null,
