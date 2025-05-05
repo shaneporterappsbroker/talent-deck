@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CornerDownLeft } from "lucide-react";
 import { EngineerResource } from "@/lib/api/models/types";
@@ -28,8 +27,8 @@ export default function Page() {
     input,
     setInput,
     setSelectedEngineers,
-    isGenerating,
-    setIsGenerating,
+    isBusy,
+    setIsBusy,
     reset,
   } = useChatState();
 
@@ -67,10 +66,12 @@ export default function Page() {
     };
 
     if (inputText) {
+      setIsBusy(true);
       validationResponse = await validateUserResponse({
         question: promptStepsConfig[step][BOT_PROMPT],
         answer: inputText ?? "",
       });
+      setIsBusy(false);
     }
 
     if (validationResponse.result === "pass") {
@@ -99,7 +100,7 @@ export default function Page() {
                   component: (
                     <SlidesPreview
                       projectDetails={capturedInfo}
-                      onComplete={() => setIsGenerating(false)}
+                      onComplete={() => setIsBusy(false)}
                     />
                   ),
                 } as const,
@@ -120,30 +121,18 @@ export default function Page() {
     // move on if the validation passes:
     if (validationResponse.result === "pass") {
       if (step === PROMPTS_COUNT) {
-        setIsGenerating(true);
+        setIsBusy(true);
       } else {
         setStep((step) => step + 1);
       }
     }
   };
 
-  const [opacity, setOpacity] = useState(0);
-  const getOpacity = () =>
-    `absolute top-4 left-4 bg-white opacity-${opacity} text-black p-4 rounded-lg max-w-[450px] break-all`;
-
   return (
     <div className="flex flex-col h-screen bg-[#343541] text-white relative">
       <UserMenu />
 
-      <ChatHistory messages={messages} />
-
-      <div
-        className={getOpacity()}
-        onMouseOver={() => setOpacity(100)}
-        onMouseLeave={() => setOpacity(0)}
-      >
-        {JSON.stringify(capturedInfo, null, 2)}
-      </div>
+      <ChatHistory messages={messages} isBusy={isBusy} />
 
       {/* first step */}
       {step === 1 ? (
@@ -179,7 +168,12 @@ export default function Page() {
                   });
                 }}
               />
-              <Button type="submit" size="icon" variant="ghost">
+              <Button
+                type="submit"
+                size="icon"
+                variant="ghost"
+                disabled={isBusy}
+              >
                 <CornerDownLeft className="w-5 h-5" />
               </Button>
             </form>
@@ -188,7 +182,7 @@ export default function Page() {
       )}
 
       {/* this is what is shown when the slides have been generated and the chat has finished */}
-      {step === PROMPTS_COUNT && !isGenerating && (
+      {step === PROMPTS_COUNT && !isBusy && (
         <div className="sticky bottom-0 w-full bg-[#343541] border-t border-[#40414f] px-4 py-6 flex justify-center">
           <Button variant="secondary" onClick={reset}>
             Start Again

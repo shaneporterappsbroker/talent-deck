@@ -1,9 +1,16 @@
 import { Message } from "@/lib/api/models/types";
+import { Star } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useEffect, useRef } from "react";
 import { Typewriter } from "react-simple-typewriter";
 
-export const ChatHistory = ({ messages }: { messages: Message[] }) => {
+export const ChatHistory = ({
+  messages,
+  isBusy,
+}: {
+  messages: Message[];
+  isBusy: boolean;
+}) => {
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -48,6 +55,21 @@ export const ChatHistory = ({ messages }: { messages: Message[] }) => {
             </motion.div>
           ))}
         </AnimatePresence>
+        <AnimatePresence>
+          {isBusy && (
+            <motion.div
+              key="spinner"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.2 }}
+              className="text-gray-500"
+            >
+              <Star className="animate-spin" size={25} />
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <div ref={bottomRef} />
       </div>
     </div>
