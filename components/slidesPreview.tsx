@@ -5,7 +5,6 @@ import {
   processDataAndGenerateSlides,
   ProcessDataResult,
 } from "@/app/actions/generateSlides";
-import { Star } from "lucide-react";
 import { SlidesError } from "./slidesError";
 import { CapturedInfo } from "@/lib/api/models/types";
 
@@ -54,11 +53,7 @@ export function SlidesPreview({
     fetchSlides();
   }, [projectDetails, onComplete]);
 
-  if (loading) {
-    return <Star className="animate-spin text-gray-500" size={30} />;
-  }
-
-  if (!slidesResult) {
+  if (loading || !slidesResult) {
     return null;
   }
 

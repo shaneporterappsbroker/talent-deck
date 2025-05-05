@@ -16,7 +16,7 @@ export function useChatState() {
   >([]);
   const [input, setInput] = useState("");
 
-  const [isGenerating, setIsGenerating] = useState(false);
+  const [isBusy, setIsBusy] = useState(false);
 
   const reset = () => {
     setMessages([
@@ -39,8 +39,8 @@ export function useChatState() {
     setSelectedEngineers,
     input,
     setInput,
-    isGenerating,
-    setIsGenerating,
+    isBusy,
+    setIsBusy,
     reset,
   };
 }
