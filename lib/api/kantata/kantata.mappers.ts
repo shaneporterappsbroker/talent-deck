@@ -3,7 +3,7 @@ import { Project, EngineerResource } from "@/lib/api/models/types";
 
 import { GetUsersResponseData } from "./kantata.client";
 
-const LOW_LEVEL_SKILL = 1;
+const MINIMUM_SKILL_LEVEL = 3;
 
 // for now, let's just return some data from here:
 export const translateUserData = (
@@ -91,7 +91,7 @@ export const translateUserData = (
           (skill) =>
             skill.description !== "Language" &&
             !(skill.description?.includes("Certification") ?? false) &&
-            (skill.level ?? 0) > LOW_LEVEL_SKILL,
+            (skill.level ?? 0) >= MINIMUM_SKILL_LEVEL,
         )
         .map((skill) => skill.name ?? ""),
       projects: getProjects(user),
