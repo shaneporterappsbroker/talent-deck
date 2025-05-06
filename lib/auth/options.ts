@@ -9,6 +9,9 @@ export const authOptions: AuthOptions = {
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorization: {
         params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
           scope:
             "openid email profile https://www.googleapis.com/auth/presentations https://www.googleapis.com/auth/drive",
         },
@@ -32,13 +35,19 @@ export const authOptions: AuthOptions = {
     }) {
       if (account) {
         token.accessToken = account.access_token;
+        token.refreshToken = account.refresh_token;
+        token.accessTokenExpires = account.expires_at! * 1000;
       }
 
       if (trigger === "update" && session?.kantataAccessToken) {
         token.kantataAccessToken = session.kantataAccessToken;
       }
 
-      return token;
+      if (Date.now() < (token.accessTokenExpires as number)) {
+        return token;
+      }
+
+      return await refreshAccessToken(token);
     },
     async session({ session, token }: { session: Session; token: JWT }) {
       session.kantataAccessToken = token.kantataAccessToken as string;
@@ -47,4 +56,35 @@ export const authOptions: AuthOptions = {
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
+};
+
+const refreshAccessToken = async (token: JWT): Promise<JWT> => {
+  try {
+    const url =
+      "https://oauth2.googleapis.com/token?" +
+      new URLSearchParams({
+        client_id: process.env.GOOGLE_CLIENT_ID!,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+        grant_type: "refresh_token",
+        refresh_token: token.refreshToken as string,
+      });
+
+    const res = await fetch(url, { method: "POST" });
+    const refreshedTokens = await res.json();
+
+    if (!res.ok) throw refreshedTokens;
+
+    return {
+      ...token,
+      accessToken: refreshedTokens.access_token,
+      accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
+      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken, // Keep old one if not returned
+    };
+  } catch (error) {
+    console.error("Failed to refresh access token", error);
+    return {
+      ...token,
+      error: "RefreshAccessTokenError",
+    };
+  }
 };
