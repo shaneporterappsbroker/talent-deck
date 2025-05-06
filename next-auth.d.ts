@@ -8,7 +8,9 @@ declare module "next-auth" {
   }
 
   interface JWT {
-    kantataAccessToken?: string;
     accessToken?: string;
+    refreshToken?: string;
+    kantataAccessToken?: string;
+    error?: string;
   }
 }
