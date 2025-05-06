@@ -51,7 +51,7 @@ export default function Page() {
       {
         role: "user",
         text: engineers?.length
-          ? engineers.map((e) => e.name).join(",")
+          ? engineers.map((e) => e.name).join(", ")
           : inputText,
       },
     ]);
@@ -120,9 +120,13 @@ export default function Page() {
 
     // move on if the validation passes:
     if (validationResponse.result === "pass") {
-      if (step === PROMPTS_COUNT) {
+      // haven't updated the step yet, so
+      // let's see if we're on the penultimate step:
+      if (step === PROMPTS_COUNT - 1) {
         setIsBusy(true);
-      } else {
+      }
+
+      if (step !== PROMPTS_COUNT) {
         setStep((step) => step + 1);
       }
     }
@@ -132,7 +136,7 @@ export default function Page() {
     <div className="flex flex-col h-screen bg-[#343541] text-white relative">
       <UserMenu />
 
-      <ChatHistory messages={messages} isBusy={isBusy} />
+      <ChatHistory {...{ messages, isBusy }} />
 
       {/* first step */}
       {step === 1 ? (
@@ -146,7 +150,7 @@ export default function Page() {
         </div>
       ) : (
         // one of the intermediate steps:
-        step !== PROMPTS_COUNT && (
+        step < PROMPTS_COUNT && (
           <div className="sticky bottom-0 w-full bg-[#343541] border-t border-[#40414f] px-4 py-4">
             <form
               onSubmit={(e) => {
@@ -182,7 +186,7 @@ export default function Page() {
       )}
 
       {/* this is what is shown when the slides have been generated and the chat has finished */}
-      {step === PROMPTS_COUNT && !isBusy && (
+      {step === PROMPTS_COUNT && (
         <div className="sticky bottom-0 w-full bg-[#343541] border-t border-[#40414f] px-4 py-6 flex justify-center">
           <Button variant="secondary" onClick={reset}>
             Start Again

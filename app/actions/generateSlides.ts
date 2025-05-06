@@ -83,7 +83,11 @@ export async function processDataAndGenerateSlides({
 
   let slideInfo: GenerateSlidesResult;
   try {
-    slideInfo = await generateSlides(session?.accessToken, slidesData);
+    slideInfo = await generateSlides({
+      clientName: projectDetails.clientName,
+      resources: slidesData,
+      accessToken: session?.accessToken,
+    });
   } catch (err) {
     return {
       data: null,

@@ -3,6 +3,7 @@ import { z } from "zod";
 
 export type CapturedInfo = {
   engineers: string;
+  clientName: string;
   clientAndProjectDescription: string;
   technologies: string;
   otherDetails: string;
