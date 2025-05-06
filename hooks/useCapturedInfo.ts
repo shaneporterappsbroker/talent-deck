@@ -3,9 +3,10 @@ import { useState } from "react";
 
 const stepToKey = {
   1: "engineers",
-  2: "clientAndProjectDescription",
-  3: "technologies",
-  4: "otherDetails",
+  2: "clientName",
+  3: "clientAndProjectDescription",
+  4: "technologies",
+  5: "otherDetails",
 } as const;
 
 export type StepNumber = keyof typeof stepToKey;
@@ -13,6 +14,7 @@ export type StepNumber = keyof typeof stepToKey;
 export function useCapturedInfo() {
   const [capturedInfo, setCapturedInfo] = useState<CapturedInfo>({
     engineers: "",
+    clientName: "",
     clientAndProjectDescription: "",
     technologies: "",
     otherDetails: "",
@@ -32,6 +34,7 @@ export function useCapturedInfo() {
   function reset() {
     setCapturedInfo({
       engineers: "",
+      clientName: "",
       clientAndProjectDescription: "",
       technologies: "",
       otherDetails: "",

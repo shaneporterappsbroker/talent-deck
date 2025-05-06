@@ -28,16 +28,21 @@ async function withClients(
   return callback({ slidesClient, driveClient });
 }
 
-export async function generateSlides(
-  accessToken: string | undefined,
-  resources: GeneratedEngineerResource[],
-): Promise<GenerateSlidesResult> {
+export async function generateSlides({
+  clientName,
+  accessToken,
+  resources,
+}: {
+  clientName: string;
+  accessToken: string | undefined;
+  resources: GeneratedEngineerResource[];
+}): Promise<GenerateSlidesResult> {
   return withClients(accessToken, async ({ slidesClient, driveClient }) => {
     const newPresentationId = await (async () => {
       const res = await driveClient.files.copy({
         fileId: SOURCE_PRESENTATION_ID,
         requestBody: {
-          name: `Generated Developer Slides - ${new Date().toISOString()}`,
+          name: `${clientName}- ENGINEERS - ${new Date().toISOString()}`,
         },
         supportsAllDrives: true,
       });
