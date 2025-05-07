@@ -24,6 +24,11 @@ export const authOptions: AuthOptions = {
       const allowedDomain = process.env.ALLOWED_LOGIN_DOMAIN;
       const emailDomain = profile?.email?.split("@")[1];
 
+      console.log("Allowed domain check on login:", {
+        allowedDomain,
+        emailDomain,
+      });
+
       return emailDomain === allowedDomain;
     },
     async jwt({
