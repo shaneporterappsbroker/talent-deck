@@ -12,6 +12,7 @@ export const authOptions: AuthOptions = {
           prompt: "consent",
           access_type: "offline",
           response_type: "code",
+          hd: process.env.ALLOWED_LOGIN_DOMAIN,
           scope:
             "openid email profile https://www.googleapis.com/auth/presentations https://www.googleapis.com/auth/drive",
         },
@@ -19,8 +20,11 @@ export const authOptions: AuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn() {
-      return true;
+    async signIn({ profile }) {
+      const allowedDomain = process.env.ALLOWED_LOGIN_DOMAIN;
+      const emailDomain = profile?.email?.split("@")[1];
+
+      return emailDomain === allowedDomain;
     },
     async jwt({
       token,
