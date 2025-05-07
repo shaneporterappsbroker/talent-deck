@@ -26,3 +26,7 @@ env:
     secret: projects/421795921996/secrets/KANTATA_API_BASE_URL
   - variable: NEXTAUTH_URL
     secret: projects/421795921996/secrets/NEXTAUTH_URL
+  - variable: GEMINI_API_KEY
+    secret: projects/421795921996/secrets/GEMINI_API_KEY
+  - variable: ALLOWED_LOGIN_DOMAIN
+    secret: projects/421795921996/secrets/ALLOWED_LOGIN_DOMAIN
