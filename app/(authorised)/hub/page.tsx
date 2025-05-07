@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { CornerDownLeft } from "lucide-react";
 import { EngineerResource } from "@/lib/api/models/types";
@@ -17,6 +18,7 @@ import {
 import { useChatState } from "@/hooks/useChatState";
 import { StepNumber, useCapturedInfo } from "@/hooks/useCapturedInfo";
 import { validateUserResponse } from "@/app/actions/validateUserResponse";
+import { isCapturedInfoComplete } from "@/lib/utils";
 
 export default function Page() {
   const {
@@ -34,7 +36,21 @@ export default function Page() {
 
   const { capturedInfo, updateStepValue } = useCapturedInfo();
 
-  // we can use the override for the engineers select step:
+  const addBotMessagesForStep = (step: number, validationText: string) => {
+    const nextPrompt = promptStepsConfig[step + 1]?.[BOT_PROMPT];
+    const newMessages =
+      step < PROMPTS_COUNT - 1
+        ? [
+            {
+              role: "bot",
+              text: `${validationText} ${nextPrompt}`,
+            } as const,
+          ]
+        : [];
+
+    setMessages((prev) => [...prev, ...newMessages]);
+  };
+
   const handleSend = async ({
     engineers,
     inputText,
@@ -42,10 +58,8 @@ export default function Page() {
     engineers?: EngineerResource[];
     inputText?: string;
   }) => {
-    // we need one of the two:
     if (engineers?.length === 0 && !inputText?.trim()) return;
 
-    // append the response/user's messages to the chat history:
     setMessages((prev) => [
       ...prev,
       {
@@ -56,14 +70,9 @@ export default function Page() {
       },
     ]);
 
-    // clear the input:
     setInput("");
 
-    // for text input, we need to further validate the response:
-    let validationResponse = {
-      result: "pass",
-      text: "",
-    };
+    let validationResponse = { result: "pass", text: "" };
 
     if (inputText) {
       setIsBusy(true);
@@ -81,47 +90,11 @@ export default function Page() {
           ? engineers.map(({ email }) => email).join(",")
           : (inputText ?? ""),
       );
-    }
 
-    setTimeout(() => {
-      if (validationResponse.result === "pass") {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "bot",
-            text: `${validationResponse.text} ${promptStepsConfig[step + 1][BOT_PROMPT]}`,
-          } as const,
-          ...(step < PROMPTS_COUNT - 1
-            ? []
-            : [
-                {
-                  role: "bot",
-                  type: "component",
-                  component: (
-                    <SlidesPreview
-                      projectDetails={capturedInfo}
-                      onComplete={() => setIsBusy(false)}
-                    />
-                  ),
-                } as const,
-              ]),
-        ]);
-      } else {
-        // if the validation fails, we need to show the validation message:
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "bot",
-            text: validationResponse.text,
-          } as const,
-        ]);
-      }
-    }, 400);
+      setTimeout(() => {
+        addBotMessagesForStep(step, validationResponse.text);
+      }, 400);
 
-    // move on if the validation passes:
-    if (validationResponse.result === "pass") {
-      // haven't updated the step yet, so
-      // let's see if we're on the penultimate step:
       if (step === PROMPTS_COUNT - 1) {
         setIsBusy(true);
       }
@@ -129,16 +102,48 @@ export default function Page() {
       if (step !== PROMPTS_COUNT) {
         setStep((step) => step + 1);
       }
+    } else {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          text: validationResponse.text,
+        } as const,
+      ]);
     }
   };
+
+  useEffect(() => {
+    if (step === PROMPTS_COUNT && isCapturedInfoComplete(capturedInfo)) {
+      setMessages((prev) => {
+        const alreadyHasPreview = prev.some(
+          (msg) =>
+            msg.type === "component" && msg.component?.type === SlidesPreview,
+        );
+        if (alreadyHasPreview) return prev;
+
+        return [
+          ...prev,
+          {
+            role: "bot",
+            type: "component",
+            component: (
+              <SlidesPreview
+                projectDetails={capturedInfo}
+                onComplete={() => setIsBusy(false)}
+              />
+            ),
+          } as const,
+        ];
+      });
+    }
+  }, [capturedInfo, setIsBusy, setMessages, step]);
 
   return (
     <div className="flex flex-col h-screen bg-[#343541] text-white relative">
       <UserMenu />
-
       <ChatHistory {...{ messages, isBusy }} />
 
-      {/* first step */}
       {step === 1 ? (
         <div className="sticky bottom-0 w-full bg-[#343541] border-t-4 border-[#40414f] px-4 py-4">
           <EngineersSelect
@@ -149,15 +154,12 @@ export default function Page() {
           />
         </div>
       ) : (
-        // one of the intermediate steps:
         step < PROMPTS_COUNT && (
           <div className="sticky bottom-0 w-full bg-[#343541] border-t border-[#40414f] px-4 py-4">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
-                handleSend({
-                  inputText: input,
-                });
+                handleSend({ inputText: input });
               }}
               className="flex max-w-3xl mx-auto items-center gap-2"
             >
@@ -167,9 +169,7 @@ export default function Page() {
                 onChange={(value) => setInput(value)}
                 onSubmit={(value) => {
                   setInput(value);
-                  handleSend({
-                    inputText: value,
-                  });
+                  handleSend({ inputText: value });
                 }}
               />
               <Button
@@ -185,8 +185,7 @@ export default function Page() {
         )
       )}
 
-      {/* this is what is shown when the slides have been generated and the chat has finished */}
-      {step === PROMPTS_COUNT && (
+      {step === PROMPTS_COUNT && !isBusy && (
         <div className="sticky bottom-0 w-full bg-[#343541] border-t border-[#40414f] px-4 py-6 flex justify-center">
           <Button variant="secondary" onClick={reset}>
             Start Again

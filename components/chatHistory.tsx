@@ -37,18 +37,18 @@ export const ChatHistory = ({
                   <div className="max-w-xl">{msg.component}</div>
                 ) : (
                   // Render text if it's not a component
-                  <div className="max-w-xl text-lg text-gray-200 whitespace-pre-line">
+                  <div className="max-w-xl text-md text-gray-200 whitespace-pre-line">
                     <Typewriter
                       words={[msg.text || ""]}
                       loop={1}
-                      typeSpeed={30}
+                      typeSpeed={15}
                       deleteSpeed={0}
                       delaySpeed={1000}
                     />
                   </div>
                 )
               ) : (
-                <div className="px-4 py-3 rounded-xl bg-[#2e8fff] text-white max-w-xl text-lg whitespace-pre-line">
+                <div className="px-3 py-1 rounded-xl bg-[#FFE7D0] text-gray-800 max-w-xl text-md whitespace-pre-line">
                   {msg.text}
                 </div>
               )}

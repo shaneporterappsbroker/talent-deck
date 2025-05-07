@@ -1,9 +1,18 @@
 import { auth, slides_v1 } from "@googleapis/slides";
 import { drive_v3 } from "@googleapis/drive";
-import { GeneratedEngineerResource } from "@/lib/api/models/types";
+import {
+  CapturedInfo,
+  GeneratedEngineerResource,
+} from "@/lib/api/models/types";
+import { generateMissingSummary, getFirstName } from "@/lib/utils";
 
 const SOURCE_PRESENTATION_ID = "1mf5cCvC2Y3jWJK76ubddhDbbtJVEcuy3hrk6Z1VzhVA";
 const TEMPLATE_SLIDE_ID = "SLIDES_API226386460_0";
+
+const SLIDE_WIDTH = 720;
+const SLIDE_HEIGHT = 360;
+const PROMPT_MARGIN = 20;
+const PROMPT_WIDTH = 300;
 
 interface Clients {
   slidesClient: slides_v1.Slides;
@@ -29,11 +38,11 @@ async function withClients(
 }
 
 export async function generateSlides({
-  clientName,
+  capturedInfo,
   accessToken,
   resources,
 }: {
-  clientName: string;
+  capturedInfo: CapturedInfo;
   accessToken: string | undefined;
   resources: GeneratedEngineerResource[];
 }): Promise<GenerateSlidesResult> {
@@ -42,7 +51,7 @@ export async function generateSlides({
       const res = await driveClient.files.copy({
         fileId: SOURCE_PRESENTATION_ID,
         requestBody: {
-          name: `${clientName}- ENGINEERS - ${new Date().toISOString()}`,
+          name: `${capturedInfo.clientName} - ENGINEERS - ${new Date().toISOString()}`,
         },
         supportsAllDrives: true,
       });
@@ -123,6 +132,99 @@ export async function generateSlides({
         }
       }
       return null;
+    };
+
+    const addPromptToSlide = async ({
+      slides,
+      presentationId,
+      slideObjectId,
+      message,
+      boxId = `prompt_${Date.now()}`,
+      position = {
+        x: SLIDE_WIDTH - PROMPT_MARGIN - PROMPT_WIDTH,
+        y: PROMPT_MARGIN,
+      },
+      width = PROMPT_WIDTH,
+    }: {
+      slides: slides_v1.Slides;
+      presentationId: string;
+      slideObjectId: string;
+      message: string;
+      boxId?: string;
+      position?: { x: number; y: number }; // PT units
+      width?: number; // PT units
+    }) => {
+      const height = SLIDE_HEIGHT - PROMPT_MARGIN * 2;
+
+      await slides.presentations.batchUpdate({
+        presentationId,
+        requestBody: {
+          requests: [
+            {
+              createShape: {
+                objectId: boxId,
+                shapeType: "TEXT_BOX",
+                elementProperties: {
+                  pageObjectId: slideObjectId,
+                  size: {
+                    height: { magnitude: height, unit: "PT" },
+                    width: { magnitude: width, unit: "PT" },
+                  },
+                  transform: {
+                    scaleX: 1,
+                    scaleY: 1,
+                    translateX: position.x,
+                    translateY: position.y,
+                    unit: "PT",
+                  },
+                },
+              },
+            },
+            {
+              insertText: {
+                objectId: boxId,
+                insertionIndex: 0,
+                text: message,
+              },
+            },
+            {
+              updateShapeProperties: {
+                objectId: boxId,
+                shapeProperties: {
+                  shapeBackgroundFill: {
+                    solidFill: {
+                      color: {
+                        rgbColor: {
+                          red: 1.0,
+                          green: 1.0,
+                          blue: 0.6,
+                        },
+                      },
+                    },
+                  },
+                },
+                fields: "shapeBackgroundFill.solidFill.color",
+              },
+            },
+            {
+              updateTextStyle: {
+                objectId: boxId,
+                style: {
+                  italic: true,
+                  fontSize: {
+                    magnitude: 8,
+                    unit: "PT",
+                  },
+                },
+                textRange: {
+                  type: "ALL",
+                },
+                fields: "italic,fontSize",
+              },
+            },
+          ],
+        },
+      });
     };
 
     const replacePlaceholders = async (
@@ -276,6 +378,27 @@ export async function generateSlides({
 
     for (let i = 0; i < resources.length; i++) {
       await replacePlaceholders(duplicatedSlideIds[i], resources[i]);
+
+      // is there sufficient data for each engineer?
+      const missingSummary = generateMissingSummary(resources[i]);
+
+      if (missingSummary) {
+        await addPromptToSlide({
+          message: [
+            `Hi ${getFirstName(resources[i].name)} 👋,`,
+            `we noticed there was some incomplete data – your ${missingSummary} need to be completed.`,
+            "Please can you take a look at this slide and update the missing information? Thanks!",
+            `It's a project for '${capturedInfo.clientName}'`,
+            "The project details that were used to generate this slide are:",
+            `Client/Project Description - ${capturedInfo.clientAndProjectDescription}`,
+            `Technologies - ${capturedInfo.technologies}`,
+            `Other details - ${capturedInfo.otherDetails}`,
+          ].join("\n\n"),
+          presentationId: newPresentationId,
+          slides: slidesClient,
+          slideObjectId: duplicatedSlideIds[0],
+        });
+      }
     }
 
     const thumbRes = await driveClient.files.get({
