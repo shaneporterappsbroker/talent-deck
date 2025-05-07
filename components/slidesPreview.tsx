@@ -21,8 +21,17 @@ export function SlidesPreview({
   );
   const hasFetched = useRef(false); // Prevent double-fetch in dev
 
+  const allCaptured = Object.values(projectDetails).every(
+    (value) => value.trim() !== "",
+  );
+
+  console.log({
+    allCaptured,
+    projectDetails,
+  });
+
   useEffect(() => {
-    if (hasFetched.current) return;
+    if (!allCaptured || hasFetched.current) return;
     hasFetched.current = true;
 
     const fetchSlides = async () => {
@@ -51,9 +60,9 @@ export function SlidesPreview({
     };
 
     fetchSlides();
-  }, [projectDetails, onComplete]);
+  }, [projectDetails, onComplete, allCaptured]);
 
-  if (loading || !slidesResult) {
+  if (!allCaptured || loading || !slidesResult) {
     return null;
   }
 
