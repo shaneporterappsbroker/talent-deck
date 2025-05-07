@@ -27,6 +27,7 @@ export const authOptions: AuthOptions = {
       console.log("Allowed domain check on login:", {
         allowedDomain,
         emailDomain,
+        nextAuthUrl: process.env.NEXTAUTH_URL,
       });
 
       return emailDomain === allowedDomain;
