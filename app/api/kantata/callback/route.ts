@@ -58,5 +58,5 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  return NextResponse.redirect(new URL(routes.hub, req.url));
+  return NextResponse.redirect(new URL(routes.hub, process.env.NEXTAUTH_URL));
 }
