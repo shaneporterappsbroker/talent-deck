@@ -6,7 +6,7 @@ import {
 import { GoogleGenAI /*, schemaFromZodType */ } from "@google/genai";
 // import { z } from "zod";
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_MODEL = "gemini-2.0-flash-001";
+const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemini-2.0-flash-001";
 
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
