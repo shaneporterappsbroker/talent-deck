@@ -18,7 +18,7 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getUsersData } from "@/lib/api/services/resource.service";
 import { EngineerResource } from "@/lib/api/models/types";
-import { PLACEHOLDER, promptStepsConfig } from "@/lib/config/promptSteps";
+import { promptStepsConfig } from "@/lib/config/promptSteps";
 
 export const EngineersSelect = ({
   onSelectionComplete,
@@ -171,7 +171,7 @@ export const EngineersSelect = ({
             ))}
           </div>
         ) : (
-          <div>{promptStepsConfig[1][PLACEHOLDER]}</div>
+          <div>{promptStepsConfig[1].placeholder}</div>
         )}
       </div>
 

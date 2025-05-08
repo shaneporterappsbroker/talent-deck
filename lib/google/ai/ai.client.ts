@@ -29,11 +29,16 @@ export async function generateSlidesData({
   projectDetails: CapturedInfo;
   engineerResources: EngineerResource[];
 }) {
+  const prompt = getSlidesDataPrompt(projectDetails, engineerResources);
+
   const response = await generateContent({
-    contents: getSlidesDataPrompt(projectDetails, engineerResources),
+    contents: prompt,
   });
 
-  return response.text;
+  return {
+    text: response.text,
+    prompt,
+  };
 }
 
 export async function validateResponse(questionAnswer: QuestionAnswer) {

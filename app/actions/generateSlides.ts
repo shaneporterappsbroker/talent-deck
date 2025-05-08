@@ -17,6 +17,7 @@ import { getServerSession } from "next-auth";
 
 export type ProcessDataResult = {
   data: GenerateSlidesResult | null;
+  prompt?: string;
   error?: { message: string; stack?: string };
 };
 
@@ -54,14 +55,19 @@ export async function processDataAndGenerateSlides({
   }
 
   let generatedDevs: string | undefined;
+  let prompt = "";
   try {
-    generatedDevs = await generateSlidesData({
+    const slidesData = await generateSlidesData({
       projectDetails,
       engineerResources,
     });
+
+    generatedDevs = slidesData.text;
+    prompt = process.env.GEMINI_LOG_PROMPT === "true" ? slidesData.prompt : "";
   } catch (err) {
     return {
       data: null,
+      prompt,
       error: {
         message: "AI data generation failed.",
         stack: getErrorStack(err),
@@ -91,6 +97,7 @@ export async function processDataAndGenerateSlides({
   } catch (err) {
     return {
       data: null,
+      prompt,
       error: {
         message: "Failed to generate slides.",
         stack: getErrorStack(err),
@@ -100,5 +107,6 @@ export async function processDataAndGenerateSlides({
 
   return {
     data: slideInfo,
+    prompt,
   };
 }

@@ -25,11 +25,6 @@ export function SlidesPreview({
     (value) => value.trim() !== "",
   );
 
-  console.log({
-    allCaptured,
-    projectDetails,
-  });
-
   useEffect(() => {
     if (!allCaptured || hasFetched.current) return;
     hasFetched.current = true;
@@ -41,6 +36,7 @@ export function SlidesPreview({
         });
 
         setSlidesResult(result);
+        localStorage.setItem("prompt-debug", result.prompt ?? "");
 
         setLoading(false);
         onComplete();
