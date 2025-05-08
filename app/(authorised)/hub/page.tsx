@@ -9,16 +9,12 @@ import { AutoResizingTextArea } from "@/components/AutoResizingTextArea";
 import { SlidesPreview } from "@/components/slidesPreview";
 import { ChatHistory } from "@/components/chatHistory";
 import { EngineersSelect } from "@/components/engineersSelect";
-import {
-  BOT_PROMPT,
-  PLACEHOLDER,
-  PROMPTS_COUNT,
-  promptStepsConfig,
-} from "@/lib/config/promptSteps";
+import { PROMPTS_COUNT, promptStepsConfig } from "@/lib/config/promptSteps";
 import { useChatState } from "@/hooks/useChatState";
 import { StepNumber, useCapturedInfo } from "@/hooks/useCapturedInfo";
 import { validateUserResponse } from "@/app/actions/validateUserResponse";
 import { isCapturedInfoComplete } from "@/lib/utils";
+import StickyFooter from "@/components/stickyFooter";
 
 export default function Page() {
   const {
@@ -37,18 +33,14 @@ export default function Page() {
   const { capturedInfo, updateStepValue } = useCapturedInfo();
 
   const addBotMessagesForStep = (step: number, validationText: string) => {
-    const nextPrompt = promptStepsConfig[step + 1]?.[BOT_PROMPT];
-    const newMessages =
-      step < PROMPTS_COUNT - 1
-        ? [
-            {
-              role: "bot",
-              text: `${validationText} ${nextPrompt}`,
-            } as const,
-          ]
-        : [];
+    const { botPrompt: prompt } = promptStepsConfig[step + 1];
 
-    setMessages((prev) => [...prev, ...newMessages]);
+    const baseMessage = {
+      role: "bot",
+      text: prompt ? `${validationText} ${prompt}` : `${validationText}`,
+    } as const;
+
+    setMessages((prev) => [...prev, baseMessage]);
   };
 
   const handleSend = async ({
@@ -74,10 +66,12 @@ export default function Page() {
 
     let validationResponse = { result: "pass", text: "" };
 
+    const { botPrompt: prompt } = promptStepsConfig[step];
+
     if (inputText) {
       setIsBusy(true);
       validationResponse = await validateUserResponse({
-        question: promptStepsConfig[step][BOT_PROMPT],
+        question: prompt,
         answer: inputText ?? "",
       });
       setIsBusy(false);
@@ -93,15 +87,18 @@ export default function Page() {
 
       setTimeout(() => {
         addBotMessagesForStep(step, validationResponse.text);
+
+        if (step === PROMPTS_COUNT - 1) {
+          setIsBusy(true);
+        }
+
+        // Delay step increment slightly to allow final message to show before preview
+        setTimeout(() => {
+          if (step < PROMPTS_COUNT) {
+            setStep((step) => step + 1);
+          }
+        }, 200);
       }, 400);
-
-      if (step === PROMPTS_COUNT - 1) {
-        setIsBusy(true);
-      }
-
-      if (step !== PROMPTS_COUNT) {
-        setStep((step) => step + 1);
-      }
     } else {
       setMessages((prev) => [
         ...prev,
@@ -144,18 +141,16 @@ export default function Page() {
       <UserMenu />
       <ChatHistory {...{ messages, isBusy }} />
 
-      {step === 1 ? (
-        <div className="sticky bottom-0 w-full bg-[#343541] border-t-4 border-[#40414f] px-4 py-4">
-          <EngineersSelect
-            onSelectionComplete={(engineers: EngineerResource[]) => {
-              setSelectedEngineers(engineers);
-              handleSend({ engineers });
-            }}
-          />
-        </div>
-      ) : (
-        step < PROMPTS_COUNT && (
-          <div className="sticky bottom-0 w-full bg-[#343541] border-t border-[#40414f] px-4 py-4">
+      {step < PROMPTS_COUNT && (
+        <StickyFooter>
+          {step === 1 ? (
+            <EngineersSelect
+              onSelectionComplete={(engineers: EngineerResource[]) => {
+                setSelectedEngineers(engineers);
+                handleSend({ engineers });
+              }}
+            />
+          ) : (
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -164,7 +159,7 @@ export default function Page() {
               className="flex max-w-3xl mx-auto items-center gap-2"
             >
               <AutoResizingTextArea
-                placeholder={promptStepsConfig[step][PLACEHOLDER]}
+                placeholder={promptStepsConfig[step].placeholder}
                 value={input}
                 onChange={(value) => setInput(value)}
                 onSubmit={(value) => {
@@ -181,16 +176,18 @@ export default function Page() {
                 <CornerDownLeft className="w-5 h-5" />
               </Button>
             </form>
-          </div>
-        )
+          )}
+        </StickyFooter>
       )}
 
       {step === PROMPTS_COUNT && !isBusy && (
-        <div className="sticky bottom-0 w-full bg-[#343541] border-t border-[#40414f] px-4 py-6 flex justify-center">
-          <Button variant="secondary" onClick={reset}>
-            Start Again
-          </Button>
-        </div>
+        <StickyFooter>
+          <div className="flex justify-center">
+            <Button variant="secondary" onClick={reset}>
+              Start Again
+            </Button>
+          </div>
+        </StickyFooter>
       )}
     </div>
   );

@@ -1,12 +1,12 @@
 import { Message, EngineerResource } from "@/lib/api/models/types";
-import { BOT_PROMPT, promptStepsConfig } from "@/lib/config/promptSteps";
+import { promptStepsConfig } from "@/lib/config/promptSteps";
 import { useState } from "react";
 
 export function useChatState() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "bot",
-      text: promptStepsConfig[1][BOT_PROMPT],
+      text: promptStepsConfig[1].botPrompt,
     },
   ]);
 
@@ -22,7 +22,7 @@ export function useChatState() {
     setMessages([
       {
         role: "bot",
-        text: promptStepsConfig[1][BOT_PROMPT],
+        text: promptStepsConfig[1].botPrompt,
       },
     ]);
     setStep(1);

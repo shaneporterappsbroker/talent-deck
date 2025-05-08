@@ -14,6 +14,7 @@ namespace NodeJS {
 
     GEMINI_API_KEY: string;
     GEMINI_MODEL: string;
+    GEMINI_LOG_PROMPT: string;
 
     ALLOWED_LOGIN_DOMAIN: string;
   }

@@ -30,5 +30,7 @@ env:
     secret: projects/421795921996/secrets/GEMINI_API_KEY
   - variable: GEMINI_MODEL
     secret: projects/421795921996/secrets/GEMINI_MODEL
+  - variable: GEMINI_LOG_PROMPT
+    secret: projects/421795921996/secrets/GEMINI_LOG_PROMPT
   - variable: ALLOWED_LOGIN_DOMAIN
     secret: projects/421795921996/secrets/ALLOWED_LOGIN_DOMAIN
