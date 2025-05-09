@@ -34,3 +34,7 @@ env:
     secret: projects/421795921996/secrets/GEMINI_LOG_PROMPT
   - variable: ALLOWED_LOGIN_DOMAIN
     secret: projects/421795921996/secrets/ALLOWED_LOGIN_DOMAIN
+  - variable: SOURCE_PRESENTATION_ID
+    secret: projects/421795921996/secrets/SOURCE_PRESENTATION_ID
+  - variable: SOURCE_SLIDE_ID
+    secret: projects/421795921996/secrets/SOURCE_SLIDE_ID

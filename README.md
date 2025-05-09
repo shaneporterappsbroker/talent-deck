@@ -27,20 +27,19 @@ Should this need to be regenated, you just need to `npm run types:generate:kanta
 
 ## Secrets
 
-There are always secrets. Take a look at 'em in `apphosting.yraml', the _special_ configuration for Firebase App Hosting.
+On Google Cloud, the environment values are coming from secrets. These secrets are defined in `apphosting.yaml', the _special_ configuration for Firebase App Hosting.
 
-At the time of writing, the [Firebase App Hosting Docs](https://firebase.google.com/docs/app-hosting/get-started) were a bit crap.
+Things are a bit manual at the moment, and require these steps:
 
-I achieved secrets this way:
-
-- Defined the necessary secrets in Secret Manager.
-- Then, I had to grant access for **each** one, like this:
+1. Define the secrets in Secret Manager
+2. Grant access from the command line:
 
 ```bash
-firebase apphosting:secrets:grantaccess -b talent-deck NEXT_PUBLIC_KANTATA_CLIENT_ID
+firebase apphosting:secrets:grantaccess -b talent-deck ENV_KEY1,ENV_KEY2,...
 ```
 
-It then deployed.
+3. Make sure they're added in the `apphosting.yaml` file.
+4. Don't forget to add it to the `process-env.d.ts` for code completion.
 
 ## Getting Started locally
 
