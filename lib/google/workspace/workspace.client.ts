@@ -6,8 +6,8 @@ import {
 } from "@/lib/api/models/types";
 import { generateMissingSummary, getFirstName } from "@/lib/utils";
 
-const SOURCE_PRESENTATION_ID = "1mf5cCvC2Y3jWJK76ubddhDbbtJVEcuy3hrk6Z1VzhVA";
-const TEMPLATE_SLIDE_ID = "SLIDES_API226386460_0";
+const SOURCE_PRESENTATION_ID = process.env.SOURCE_PRESENTATION_ID ?? ""; // "1mf5cCvC2Y3jWJK76ubddhDbbtJVEcuy3hrk6Z1VzhVA";
+const TEMPLATE_SLIDE_ID = process.env.SOURCE_SLIDE_ID ?? ""; // "SLIDES_API226386460_0";
 
 const SLIDE_WIDTH = 720;
 const SLIDE_HEIGHT = 360;

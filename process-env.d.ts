@@ -16,6 +16,9 @@ namespace NodeJS {
     GEMINI_MODEL: string;
     GEMINI_LOG_PROMPT: string;
 
+    SOURCE_PRESENTATION_ID: string;
+    SOURCE_SLIDE_ID: string;
+
     ALLOWED_LOGIN_DOMAIN: string;
   }
 }
