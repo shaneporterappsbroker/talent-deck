@@ -10,6 +10,8 @@ export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// a random comment
+
 export function getInitials(name: string): string {
   return name
     .trim()
