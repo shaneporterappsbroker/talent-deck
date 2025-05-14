@@ -4,14 +4,13 @@ on:
   pull_request:
     types: [opened, edited, synchronize, reopened]
 
+permissions:
+  pull-requests: write    
+
 jobs:
   lint-pr-title:
     runs-on: ubuntu-latest
     steps:
-      - name: Debug PR Title
-        run: |
-          echo "🔍 PR Title: ${{ github.event.pull_request.title }}"
-
       - name: Enforce Conventional PR Title Format
         uses: amannn/action-semantic-pull-request@v5
         with:
