@@ -26,7 +26,7 @@ jobs:
             ci
             build
           requireScope: true
-          scopePattern: '^(ISE-\d+|NO-JIRA)$'
+          scopePattern: '^(ISE-\d{1,}+|NO-JIRA)$'
           subjectPattern: ^(?![A-Z]).+$
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
