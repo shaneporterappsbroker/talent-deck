@@ -8,6 +8,10 @@ jobs:
   lint-pr-title:
     runs-on: ubuntu-latest
     steps:
+      - name: Debug PR Title
+        run: |
+          echo "🔍 PR Title: ${{ github.event.pull_request.title }}"
+
       - name: Enforce Conventional PR Title Format
         uses: amannn/action-semantic-pull-request@v5
         with:
@@ -22,7 +26,7 @@ jobs:
             ci
             build
           requireScope: true
-          scopePattern: ^(NO-JIRA|ISE-\d+)$
+          scopePattern: '^(NO\-JIRA|ISE\-\d+)$'
           subjectPattern: ^(?![A-Z]).+$
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
